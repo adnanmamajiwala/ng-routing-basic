@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ActivatedRoute, Data, Router} from '@angular/router';
+import {Subscription} from 'rxjs/Subscription';
 
-import { ServersService } from '../servers.service';
+import {ServersService} from '../servers.service';
 
 @Component({
   selector: 'app-server',
@@ -8,12 +10,38 @@ import { ServersService } from '../servers.service';
   styleUrls: ['./server.component.css']
 })
 export class ServerComponent implements OnInit {
-  server: {id: number, name: string, status: string};
 
-  constructor(private serversService: ServersService) { }
+  server: { id: number, name: string, status: string };
 
-  ngOnInit() {
-    this.server = this.serversService.getServer(1);
+  constructor(private serversService: ServersService,
+              private route: ActivatedRoute,
+              private router: Router) {
   }
 
+  ngOnInit() {
+
+    this.route.data.subscribe(
+      (data: Data) => {
+        this.server = data['server'];
+      }
+    );
+    // var id;
+    // this.server = this.serversService.getServer(id);
+    // this.route.params.subscribe(
+    //   (params: Params) => {
+    //     console.log('inside subscribe ->', params['id']);
+    //     this.server = this.serversService.getServer(+params['id']);
+    //     console.log(this.server);
+    //   }
+    // );
+
+  }
+
+  onEdit() {
+    this.router.navigate(['edit'],
+      {
+        relativeTo: this.route,
+        queryParamsHandling: 'preserve'
+      });
+  }
 }
